@@ -1,0 +1,6 @@
+Repositorio GitHub: https://github.com/[TU_USUARIO]/cerveceria-pil-andina
+
+Credenciales de acceso:
+- Administrador: admin_pil / Admin123!
+- Gerente: gerente_pil / Gerente123!
+- Distribuidor: distribuidor_pil / Dist123!
