@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Crear Producto - Cervecería Pil Andina{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+        <i class="fas fa-plus"></i> Crear Producto
+    </h1>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="codigo_unico" class="form-label">Código Único *</label>
+                            <input type="text" class="form-control" id="codigo_unico" name="codigo_unico" 
+                                   required placeholder="Ej: PAC355">
+                            <small class="text-muted">Formato: 3 letras + 3 números</small>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="nombre_comercial" class="form-label">Nombre Comercial *</label>
+                            <input type="text" class="form-control" id="nombre_comercial" name="nombre_comercial" 
+                                   required placeholder="Ej: Paceña 355ml">
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="tipo" class="form-label">Tipo *</label>
+                            <select class="form-select" id="tipo" name="tipo" required>
+                                <option value="">Seleccione...</option>
+                                <option value="Lager">Lager</option>
+                                <option value="Pilsener">Pilsener</option>
+                                <option value="Malta">Malta</option>
+                                <option value="Negra">Negra</option>
+                                <option value="Especial">Especial</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="presentacion" class="form-label">Presentación *</label>
+                            <input type="text" class="form-control" id="presentacion" name="presentacion" 
+                                   required placeholder="Ej: 355ml, 620ml, 1L">
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="graduacion_alcoholica" class="form-label">Graduación Alcohólica *</label>
+                            <input type="number" step="0.1" class="form-control" id="graduacion_alcoholica" 
+                                   name="graduacion_alcoholica" required placeholder="Ej: 4.5">
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="precio_actual" class="form-label">Precio Actual (Bs) *</label>
+                            <input type="number" step="0.01" class="form-control" id="precio_actual" 
+                                   name="precio_actual" required placeholder="Ej: 12.50">
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="stock_minimo" class="form-label">Stock Mínimo *</label>
+                            <input type="number" class="form-control" id="stock_minimo" name="stock_minimo" 
+                                   required placeholder="Ej: 100">
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="stock_maximo" class="form-label">Stock Máximo *</label>
+                            <input type="number" class="form-control" id="stock_maximo" name="stock_maximo" 
+                                   required placeholder="Ej: 10000">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="activo" name="activo" checked>
+                            <label class="form-check-label" for="activo">
+                                Activo
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> Los campos marcados con * son obligatorios.
+                    </div>
+                    
+                    <div class="text-end">
+                        <a href="{{ url_for('listar_productos') }}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Guardar Producto
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Ayuda</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Código Único:</strong> Debe ser único en el sistema y seguir el formato de 3 letras mayúsculas seguidas de 3 números.</p>
+                <p><strong>Tipos de Producto:</strong></p>
+                <ul>
+                    <li><strong>Lager:</strong> Fermentación baja</li>
+                    <li><strong>Pilsener:</strong> Tipo lager más ligera</li>
+                    <li><strong>Malta:</strong> Sin alcohol</li>
+                    <li><strong>Negra:</strong> Tostada</li>
+                    <li><strong>Especial:</strong> Ediciones especiales</li>
+                </ul>
+                <p><strong>Stock:</strong> Define los niveles mínimo y máximo para control de inventario.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

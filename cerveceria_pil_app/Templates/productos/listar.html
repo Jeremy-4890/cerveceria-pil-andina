@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Productos - Cervecería Pil Andina{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+        <i class="fas fa-box"></i> Productos
+    </h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{{ url_for('crear_producto') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Nuevo Producto
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover datatable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Código</th>
+                        <th>Nombre Comercial</th>
+                        <th>Tipo</th>
+                        <th>Presentación</th>
+                        <th>Graduación</th>
+                        <th>Precio</th>
+                        <th>Stock Mínimo</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for producto in productos %}
+                    <tr>
+                        <td>{{ producto.id }}</td>
+                        <td>{{ producto.codigo_unico }}</td>
+                        <td>{{ producto.nombre_comercial }}</td>
+                        <td>{{ producto.tipo }}</td>
+                        <td>{{ producto.presentacion }}</td>
+                        <td>{{ producto.graduacion_alcoholica }}%</td>
+                        <td>Bs {{ "{:,.2f}".format(producto.precio_actual|float) }}</td>
+                        <td>{{ producto.stock_minimo }}</td>
+                        <td>
+                            {% if producto.activo %}
+                            <span class="badge bg-success">Activo</span>
+                            {% else %}
+                            <span class="badge bg-danger">Inactivo</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ url_for('editar_producto', id=producto.id) }}" class="btn btn-sm btn-warning">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="{{ url_for('eliminar_producto', id=producto.id) }}" class="btn btn-sm btn-danger" 
+                               onclick="return confirm('¿Está seguro de desactivar este producto?')">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

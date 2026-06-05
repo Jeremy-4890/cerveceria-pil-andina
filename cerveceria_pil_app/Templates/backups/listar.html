@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+
+{% block title %}Backups - Cervecería Pil Andina{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+        <i class="fas fa-database"></i> Gestión de Backups
+    </h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{{ url_for('crear_backup') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Crear Backup
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-list"></i> Backups Disponibles
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if backups %}
+                <div class="table-responsive">
+                    <table class="table table-hover datatable">
+                        <thead>
+                            <tr class="table-info">
+                                <th>#</th>
+                                <th>Nombre del Archivo</th>
+                                <th>Fecha de Creación</th>
+                                <th>Tamaño</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for backup in backups %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td>
+                                    <i class="fas fa-file-archive"></i> 
+                                    <strong>{{ backup.nombre }}</strong>
+                                </td>
+                                <td>{{ backup.fecha.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                                <td>
+                                    {% if backup.tamaño < 1024 %}
+                                        {{ backup.tamaño }} B
+                                    {% elif backup.tamaño < 1024*1024 %}
+                                        {{ (backup.tamaño / 1024)|round(2) }} KB
+                                    {% else %}
+                                        {{ (backup.tamaño / (1024*1024))|round(2) }} MB
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="{{ url_for('descargar_backup', nombre=backup.nombre) }}" 
+                                           class="btn btn-sm btn-success">
+                                            <i class="fas fa-download"></i> Descargar
+                                        </a>
+                                        <button onclick="restaurarBackup('{{ backup.nombre }}')" 
+                                                class="btn btn-sm btn-warning">
+                                            <i class="fas fa-undo-alt"></i> Restaurar
+                                        </button>
+                                        <button onclick="eliminarBackup('{{ backup.nombre }}')" 
+                                                class="btn btn-sm btn-danger">
+                                            <i class="fas fa-trash"></i> Eliminar
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-warning text-center">
+                    <i class="fas fa-exclamation-triangle fa-3x mb-3"></i>
+                    <h5>No hay backups disponibles</h5>
+                    <p>Haga clic en "Crear Backup" para generar una copia de seguridad de la base de datos.</p>
+                    <a href="{{ url_for('crear_backup') }}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Crear Primer Backup
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-info-circle"></i> Información de Backups
+                </h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Total Backups:
+                        <span class="badge bg-primary rounded-pill">{{ backups|length }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Espacio total usado:
+                        <span class="badge bg-info rounded-pill">
+                            {% set total_size = backups|sum(attribute='tamaño') %}
+                            {% if total_size < 1024 %}
+                                {{ total_size }} B
+                            {% elif total_size < 1024*1024 %}
+                                {{ (total_size / 1024)|round(2) }} KB
+                            {% else %}
+                                {{ (total_size / (1024*1024))|round(2) }} MB
+                            {% endif %}
+                        </span>
+                    </li>
+                    <li class="list-group-item">
+                        <i class="fas fa-folder-open"></i> Ubicación de backups:
+                        <code>cerveceria_pil_app/backups/</code>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-exclamation-triangle"></i> Recomendaciones
+                </h5>
+            </div>
+            <div class="card-body">
+                <ul class="mb-0">
+                    <li><i class="fas fa-check-circle text-success"></i> Realice backups periódicos de su base de datos</li>
+                    <li><i class="fas fa-check-circle text-success"></i> Descargue los backups importantes en un lugar seguro</li>
+                    <li><i class="fas fa-check-circle text-success"></i> Verifique que los backups se puedan restaurar correctamente</li>
+                    <li><i class="fas fa-check-circle text-success"></i> Los backups automáticos se generan diariamente a las 2 AM</li>
+                    <li><i class="fas fa-check-circle text-success"></i> Los backups antiguos se eliminan automáticamente después de 30 días</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function restaurarBackup(nombre) {
+    if(confirm('¿Está seguro de restaurar el backup "' + nombre + '"?\n\n' +
+               'Esta acción reemplazará completamente la base de datos actual.\n' +
+               'Todos los datos actuales se perderán.\n\n' +
+               '¿Desea continuar?')) {
+        window.location.href = "{{ url_for('restaurar_backup', nombre='') }}" + nombre;
+    }
+}
+
+function eliminarBackup(nombre) {
+    if(confirm('¿Está seguro de eliminar el backup "' + nombre + '"?\n\n' +
+               'Esta acción no se puede deshacer.\n\n' +
+               '¿Desea continuar?')) {
+        // Primero mostrar confirmación adicional
+        const confirmar = prompt('Escriba "ELIMINAR" para confirmar la eliminación:');
+        if(confirmar === 'ELIMINAR') {
+            // Hacer una solicitud DELETE (usando fetch)
+            fetch('/backups/eliminar/' + nombre, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.success) {
+                    alert('Backup eliminado exitosamente');
+                    location.reload();
+                } else {
+                    alert('Error al eliminar backup: ' + data.error);
+                }
+            })
+            .catch(error => {
+                alert('Error al eliminar backup: ' + error);
+            });
+        } else {
+            alert('Eliminación cancelada');
+        }
+    }
+}
+</script>
+
+<style>
+    .btn-group .btn {
+        margin: 0 2px;
+    }
+    .table td {
+        vertical-align: middle;
+    }
+    .badge {
+        font-size: 14px;
+    }
+</style>
+{% endblock %}

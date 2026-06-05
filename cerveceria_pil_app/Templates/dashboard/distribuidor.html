@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard Distribuidor - Cervecería Pil Andina{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+        <i class="fas fa-store"></i> Dashboard Distribuidor
+    </h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{{ url_for('crear_pedido') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Nuevo Pedido
+        </a>
+    </div>
+</div>
+
+<!-- Stock Disponible -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-boxes"></i> Stock Disponible por Planta
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if stock_disponible %}
+                <div class="table-responsive">
+                    <table class="table table-hover datatable">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Producto</th>
+                                <th>Tipo</th>
+                                <th>Presentación</th>
+                                <th>Planta</th>
+                                <th>Ciudad</th>
+                                <th>Bodega</th>
+                                <th>Stock Disponible</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in stock_disponible %}
+                            <tr>
+                                <td>{{ item.codigo_unico }}</td>
+                                <td>{{ item.nombre_comercial }}</td>
+                                <td>{{ item.tipo }}</td>
+                                <td>{{ item.presentacion }}</td>
+                                <td>{{ item.planta }}</td>
+                                <td>{{ item.ciudad }}</td>
+                                <td>{{ item.nombre_bodega }}</td>
+                                <td>
+                                    <span class="badge {% if item.stock_total < 1000 %}bg-warning{% else %}bg-success{% endif %}">
+                                        {{ item.stock_total }} unidades
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-warning">No hay stock disponible</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Mis Pedidos Recientes -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-history"></i> Mis Pedidos Recientes
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if mis_pedidos %}
+                <div class="table-responsive">
+                    <table class="table table-hover datatable">
+                        <thead>
+                            <tr>
+                                <th>ID Pedido</th>
+                                <th>Fecha Pedido</th>
+                                <th>Fecha Entrega Requerida</th>
+                                <th>Estado</th>
+                                <th>Monto Total</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pedido in mis_pedidos %}
+                            <tr>
+                                <td>#{{ pedido.id }}</td>
+                                <td>{{ pedido.fecha_pedido }}</td>
+                                <td>{{ pedido.fecha_entrega_requerida }}</td>
+                                <td>
+                                    {% if pedido.estado == 'Entregado' %}
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-check"></i> Entregado
+                                    </span>
+                                    {% elif pedido.estado == 'Despachado' %}
+                                    <span class="badge bg-info">
+                                        <i class="fas fa-truck"></i> Despachado
+                                    </span>
+                                    {% elif pedido.estado == 'Pendiente' %}
+                                    <span class="badge bg-warning">
+                                        <i class="fas fa-clock"></i> Pendiente
+                                    </span>
+                                    {% else %}
+                                    <span class="badge bg-danger">Cancelado</span>
+                                    {% endif %}
+                                </td>
+                                <td>Bs {{ "{:,.2f}".format(pedido.monto_total|float) }}</td>
+                                <td>
+                                    <a href="{{ url_for('ver_pedido', id=pedido.id) }}" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-eye"></i> Ver
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info">No hay pedidos registrados</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

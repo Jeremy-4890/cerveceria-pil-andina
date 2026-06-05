@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+
+{% block title %}Stock Actual - Cervecería Pil Andina{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+        <i class="fas fa-warehouse"></i> Stock Actual por Producto y Planta
+    </h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <button type="button" class="btn btn-success" onclick="window.location.reload()">
+            <i class="fas fa-sync-alt"></i> Actualizar
+        </button>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6>Total Productos</h6>
+                        <h3>{{ stock|length }}</h3>
+                    </div>
+                    <i class="fas fa-box fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6>Stock Total</h6>
+                        <h3>{{ stock|sum(attribute='stock_total')|int }}</h3>
+                    </div>
+                    <i class="fas fa-chart-line fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6>Plantas Activas</h6>
+                        <h3>{{ stock|map(attribute='planta')|unique|list|length }}</h3>
+                    </div>
+                    <i class="fas fa-industry fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h5 class="card-title mb-0">
+            <i class="fas fa-list"></i> Inventario Detallado
+        </h5>
+    </div>
+    <div class="card-body">
+        <!-- Filtros -->
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <input type="text" id="filtroProducto" class="form-control" placeholder="🔍 Filtrar por producto...">
+            </div>
+            <div class="col-md-4">
+                <select id="filtroPlanta" class="form-select">
+                    <option value="">Todas las plantas</option>
+                    {% set plantas = stock|map(attribute='planta')|unique|list %}
+                    {% for planta in plantas %}
+                    <option value="{{ planta }}">{{ planta }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <select id="filtroTipo" class="form-select">
+                    <option value="">Todos los tipos</option>
+                    {% set tipos = stock|map(attribute='tipo')|unique|list %}
+                    {% for tipo in tipos %}
+                    <option value="{{ tipo }}">{{ tipo }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover" id="tablaStock">
+                <thead>
+                    <tr class="table-primary">
+                        <th>Código</th>
+                        <th>Producto</th>
+                        <th>Presentación</th>
+                        <th>Tipo</th>
+                        <th>Planta</th>
+                        <th>Ciudad</th>
+                        <th>Bodega</th>
+                        <th>Stock Total</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in stock %}
+                    <tr>
+                        <td><strong>{{ item.codigo_unico }}</strong></td>
+                        <td>{{ item.nombre_comercial }}</td>
+                        <td>{{ item.presentacion }}</td>
+                        <td>
+                            <span class="badge {% if item.tipo == 'Lager' %}bg-primary{% elif item.tipo == 'Pilsener' %}bg-info{% elif item.tipo == 'Malta' %}bg-success{% elif item.tipo == 'Negra' %}bg-dark{% else %}bg-warning{% endif %}">
+                                {{ item.tipo }}
+                            </span>
+                        </td>
+                        <td>{{ item.planta }}</td>
+                        <td>{{ item.ciudad }}</td>
+                        <td>{{ item.nombre_bodega }}</td>
+                        <td class="text-end">
+                            <strong class="{% if item.stock_total < 500 %}text-danger{% elif item.stock_total < 1000 %}text-warning{% else %}text-success{% endif %}">
+                                {{ "{:,.0f}".format(item.stock_total) }}
+                            </strong>
+                        </td>
+                        <td>
+                            {% if item.stock_total < 500 %}
+                            <span class="badge bg-danger">
+                                <i class="fas fa-exclamation-triangle"></i> Crítico
+                            </span>
+                            {% elif item.stock_total < 1000 %}
+                            <span class="badge bg-warning">
+                                <i class="fas fa-exclamation-circle"></i> Bajo
+                            </span>
+                            {% elif item.stock_total < 5000 %}
+                            <span class="badge bg-info">
+                                <i class="fas fa-check-circle"></i> Normal
+                            </span>
+                            {% else %}
+                            <span class="badge bg-success">
+                                <i class="fas fa-chart-line"></i> Alto
+                            </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Filtros en tiempo real
+    function filtrarTabla() {
+        const filtroProducto = document.getElementById('filtroProducto').value.toLowerCase();
+        const filtroPlanta = document.getElementById('filtroPlanta').value;
+        const filtroTipo = document.getElementById('filtroTipo').value;
+        
+        const rows = document.querySelectorAll('#tablaStock tbody tr');
+        
+        rows.forEach(row => {
+            const producto = row.cells[1].textContent.toLowerCase();
+            const planta = row.cells[4].textContent;
+            const tipo = row.cells[3].textContent;
+            
+            let mostrar = true;
+            
+            if (filtroProducto && !producto.includes(filtroProducto)) {
+                mostrar = false;
+            }
+            if (filtroPlanta && planta !== filtroPlanta) {
+                mostrar = false;
+            }
+            if (filtroTipo && tipo !== filtroTipo) {
+                mostrar = false;
+            }
+            
+            row.style.display = mostrar ? '' : 'none';
+        });
+    }
+    
+    document.getElementById('filtroProducto').addEventListener('keyup', filtrarTabla);
+    document.getElementById('filtroPlanta').addEventListener('change', filtrarTabla);
+    document.getElementById('filtroTipo').addEventListener('change', filtrarTabla);
+</script>
+
+<style>
+    .table-hover tbody tr:hover {
+        background-color: rgba(46, 125, 50, 0.1);
+        cursor: pointer;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Lote - Cervecería Pil Andina{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+        <i class="fas fa-edit"></i> Editar Lote #{{ lote.numero_lote }}
+    </h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{{ url_for('listar_lotes') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Número de Lote</label>
+                            <input type="text" class="form-control" value="{{ lote.numero_lote }}" disabled>
+                            <input type="hidden" name="numero_lote" value="{{ lote.numero_lote }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Producto</label>
+                            <select class="form-select" name="producto_id" required>
+                                {% for producto in productos %}
+                                <option value="{{ producto.id }}" {% if lote.producto_id == producto.id %}selected{% endif %}>
+                                    {{ producto.nombre_comercial }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Fecha Producción</label>
+                            <input type="date" class="form-control" name="fecha_produccion" 
+                                   value="{{ lote.fecha_produccion }}" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Fecha Vencimiento</label>
+                            <input type="date" class="form-control" name="fecha_vencimiento" 
+                                   value="{{ lote.fecha_vencimiento }}" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Cantidad Producida</label>
+                            <input type="number" class="form-control" name="cantidad_producida" 
+                                   value="{{ lote.cantidad_producida }}" required>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Control Calidad</label>
+                            <select class="form-select" name="control_calidad" required>
+                                <option value="Aprobado" {% if lote.control_calidad == 'Aprobado' %}selected{% endif %}>
+                                    Aprobado
+                                </option>
+                                <option value="Rechazado" {% if lote.control_calidad == 'Rechazado' %}selected{% endif %}>
+                                    Rechazado
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Técnico Responsable</label>
+                            <input type="text" class="form-control" name="tecnico_responsable" 
+                                   value="{{ lote.tecnico_responsable }}">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Observaciones</label>
+                        <textarea class="form-control" name="observaciones" rows="3">{{ lote.observaciones }}</textarea>
+                    </div>
+
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Actualizar Lote
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

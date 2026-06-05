@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Movimientos de Inventario - Cervecería Pil Andina{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+        <i class="fas fa-history"></i> Historial de Movimientos
+    </h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <button type="button" class="btn btn-success" onclick="window.location.reload()">
+            <i class="fas fa-sync-alt"></i> Actualizar
+        </button>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header bg-info text-white">
+        <h5 class="card-title mb-0">
+            <i class="fas fa-list"></i> Registro de Movimientos de Inventario
+        </h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover datatable">
+                <thead>
+                    <tr class="table-info">
+                        <th>ID</th>
+                        <th>Fecha</th>
+                        <th>Lote</th>
+                        <th>Producto</th>
+                        <th>Tipo Movimiento</th>
+                        <th>Cantidad</th>
+                        <th>Bodega Origen</th>
+                        <th>Bodega Destino</th>
+                        <th>Usuario</th>
+                        <th>Pedido ID</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for mov in movimientos %}
+                    <tr>
+                        <td>{{ mov.id }}</td>
+                        <td>{{ mov.fecha_movimiento.strftime('%Y-%m-%d %H:%M') if mov.fecha_movimiento else '' }}</td>
+                        <td><strong>{{ mov.numero_lote }}</strong></td>
+                        <td>{{ mov.nombre_comercial }}</td>
+                        <td>
+                            {% if mov.tipo_movimiento == 'entrada_produccion' %}
+                            <span class="badge bg-success">
+                                <i class="fas fa-plus-circle"></i> Entrada Producción
+                            </span>
+                            {% elif mov.tipo_movimiento == 'salida_venta' %}
+                            <span class="badge bg-danger">
+                                <i class="fas fa-minus-circle"></i> Salida Venta
+                            </span>
+                            {% else %}
+                            <span class="badge bg-warning">
+                                <i class="fas fa-exchange-alt"></i> Traslado
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end"><strong>{{ mov.cantidad }}</strong></td>
+                        <td>{{ mov.bodega_origen_id or '-' }}</td>
+                        <td>{{ mov.bodega_destino_id or '-' }}</td>
+                        <td>{{ mov.usuario_registra or '-' }}</td>
+                        <td>{{ mov.pedido_id or '-' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

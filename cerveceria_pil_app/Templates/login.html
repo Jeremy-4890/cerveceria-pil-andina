@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Iniciar Sesión - Cervecería Pil Andina{% endblock %}
+
+{% block content_login %}
+<div class="container">
+    <div class="row justify-content-center align-items-center min-vh-100">
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow-lg">
+                <div class="card-header text-center bg-primary text-white">
+                    <i class="fas fa-beer fa-3x mb-2"></i>
+                    <h4>Cervecería Pil Andina</h4>
+                    <p class="mb-0">Sistema de Gestión de Inventario</p>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">
+                                <i class="fas fa-user"></i> Usuario
+                            </label>
+                            <input type="text" class="form-control" id="username" name="username" 
+                                   placeholder="Ingrese su usuario" required autofocus>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">
+                                <i class="fas fa-lock"></i> Contraseña
+                            </label>
+                            <input type="password" class="form-control" id="password" name="password" 
+                                   placeholder="Ingrese su contraseña" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .min-vh-100 {
+        min-height: 100vh;
+    }
+    .card-header {
+        border-radius: 15px 15px 0 0;
+    }
+    .card {
+        border-radius: 15px;
+        border: none;
+    }
+    .btn-primary {
+        background-color: #2E7D32;
+        border-color: #2E7D32;
+    }
+    .btn-primary:hover {
+        background-color: #1B5E20;
+        border-color: #1B5E20;
+    }
+</style>
+{% endblock %}

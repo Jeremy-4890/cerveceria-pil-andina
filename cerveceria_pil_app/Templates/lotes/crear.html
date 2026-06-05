@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block title %}Crear Lote - Cervecería Pil Andina{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+        <i class="fas fa-plus"></i> Registrar Nuevo Lote
+    </h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{{ url_for('listar_lotes') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">Datos del Lote de Producción</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" id="formLote">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="numero_lote" class="form-label">Número de Lote *</label>
+                            <input type="text" class="form-control" id="numero_lote" name="numero_lote" 
+                                   required placeholder="Ej: LP-2025-001">
+                            <small class="text-muted">Formato: XX-AAAA-NNN (Planta-Año-Secuencia)</small>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="producto_id" class="form-label">Producto *</label>
+                            <select class="form-select" id="producto_id" name="producto_id" required>
+                                <option value="">Seleccione un producto...</option>
+                                {% for producto in productos %}
+                                <option value="{{ producto.id }}">{{ producto.nombre_comercial }} - {{ producto.presentacion }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="fecha_produccion" class="form-label">Fecha Producción *</label>
+                            <input type="date" class="form-control" id="fecha_produccion" 
+                                   name="fecha_produccion" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="fecha_vencimiento" class="form-label">Fecha Vencimiento *</label>
+                            <input type="date" class="form-control" id="fecha_vencimiento" 
+                                   name="fecha_vencimiento" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="cantidad_producida" class="form-label">Cantidad Producida *</label>
+                            <input type="number" class="form-control" id="cantidad_producida" 
+                                   name="cantidad_producida" required min="1" placeholder="Ej: 10000">
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="planta_origen_id" class="form-label">Planta de Origen *</label>
+                            <select class="form-select" id="planta_origen_id" name="planta_origen_id" required>
+                                <option value="">Seleccione una planta...</option>
+                                {% for planta in plantas %}
+                                <option value="{{ planta.id }}">{{ planta.nombre }} - {{ planta.ciudad }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="bodega_id" class="form-label">Bodega de Almacenamiento *</label>
+                            <select class="form-select" id="bodega_id" name="bodega_id" required>
+                                <option value="">Primero seleccione una planta...</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="control_calidad" class="form-label">Control Calidad *</label>
+                            <select class="form-select" id="control_calidad" name="control_calidad" required>
+                                <option value="Aprobado">Aprobado</option>
+                                <option value="Rechazado">Rechazado</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="tecnico_responsable" class="form-label">Técnico Responsable</label>
+                            <input type="text" class="form-control" id="tecnico_responsable" 
+                                   name="tecnico_responsable" placeholder="Nombre del técnico">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="observaciones" class="form-label">Observaciones</label>
+                        <textarea class="form-control" id="observaciones" name="observaciones" 
+                                  rows="3" placeholder="Observaciones adicionales..."></textarea>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> 
+                        Los lotes rechazados no se agregarán al inventario automáticamente.
+                    </div>
+
+                    <div class="text-end">
+                        <a href="{{ url_for('listar_lotes') }}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Registrar Lote
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="card-title mb-0">Ayuda</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Formato de Lote:</strong></p>
+                <ul>
+                    <li>LP - La Paz</li>
+                    <li>CB - Cochabamba</li>
+                    <li>SC - Santa Cruz</li>
+                </ul>
+                <p><strong>Ejemplo:</strong> LP-2025-001</p>
+                <hr>
+                <p><strong>Vencimiento:</strong></p>
+                <ul>
+                    <li>Cerveza Lager: 6 meses</li>
+                    <li>Cerveza Pilsener: 6 meses</li>
+                    <li>Malta: 12 meses</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Cargar bodegas según la planta seleccionada
+document.getElementById('planta_origen_id').addEventListener('change', function() {
+    const plantaId = this.value;
+    const bodegaSelect = document.getElementById('bodega_id');
+    
+    if (plantaId) {
+        fetch(`/api/bodegas_por_planta/${plantaId}`)
+            .then(response => response.json())
+            .then(data => {
+                bodegaSelect.innerHTML = '<option value="">Seleccione una bodega...</option>';
+                data.forEach(bodega => {
+                    const option = document.createElement('option');
+                    option.value = bodega.id;
+                    option.textContent = `${bodega.nombre_bodega} - ${bodega.tipo_bodega}`;
+                    bodegaSelect.appendChild(option);
+                });
+            });
+    } else {
+        bodegaSelect.innerHTML = '<option value="">Primero seleccione una planta...</option>';
+    }
+});
+
+// Validar fechas
+const fechaProd = document.getElementById('fecha_produccion');
+const fechaVenc = document.getElementById('fecha_vencimiento');
+
+fechaVenc.addEventListener('change', function() {
+    if (fechaProd.value && this.value <= fechaProd.value) {
+        alert('La fecha de vencimiento debe ser posterior a la fecha de producción');
+        this.value = '';
+    }
+});
+</script>
+{% endblock %}

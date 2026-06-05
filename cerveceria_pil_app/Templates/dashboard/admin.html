@@ -1,0 +1,225 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard Administrador - Cervecería Pil Andina{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+        <i class="fas fa-tachometer-alt"></i> Dashboard Administrador
+    </h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="window.location.reload()">
+                <i class="fas fa-sync-alt"></i> Actualizar
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Tarjetas de estadísticas -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card stat-card text-white" style="background: linear-gradient(135deg, #2E7D32, #1B5E20);">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title">Productos Activos</h6>
+                        <h2 class="mb-0">{{ total_productos }}</h2>
+                    </div>
+                    <i class="fas fa-box fa-3x opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card stat-card text-white" style="background: linear-gradient(135deg, #0288D1, #01579B);">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title">Distribuidores</h6>
+                        <h2 class="mb-0">{{ total_distribuidores }}</h2>
+                    </div>
+                    <i class="fas fa-truck fa-3x opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card stat-card text-white" style="background: linear-gradient(135deg, #F57C00, #E65100);">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title">Stock Total</h6>
+                        <h2 class="mb-0">{{ stock_total|int }}</h2>
+                    </div>
+                    <i class="fas fa-warehouse fa-3x opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card stat-card text-white" style="background: linear-gradient(135deg, #7B1FA2, #4A148C);">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title">Ventas del Mes</h6>
+                        <h2 class="mb-0">Bs {{ "{:,.2f}".format(ventas_mes|float) }}</h2>
+                    </div>
+                    <i class="fas fa-chart-line fa-3x opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Gráficos principales -->
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-chart-bar"></i> Productos Más Vendidos
+                </h5>
+            </div>
+            <div class="card-body">
+                <div id="grafico-productos"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-clock"></i> Pedidos Pendientes
+                </h5>
+            </div>
+            <div class="card-body text-center">
+                <h1 class="display-4 text-warning">{{ pedidos_pendientes }}</h1>
+                <p class="text-muted">Pedidos por despachar</p>
+                <a href="{{ url_for('listar_pedidos') }}" class="btn btn-primary">
+                    <i class="fas fa-eye"></i> Ver Pedidos
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Alertas de Stock Bajo -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-exclamation-triangle"></i> Alertas de Stock Bajo
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if alertas_stock %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr class="table-danger">
+                                <th>Producto</th>
+                                <th>Stock Actual</th>
+                                <th>Stock Mínimo</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for alerta in alertas_stock %}
+                            <tr class="table-danger">
+                                <td>{{ alerta.nombre_comercial }}</td>
+                                <td>{{ alerta.cantidad_actual }}</td>
+                                <td>{{ alerta.stock_minimo }}</td>
+                                <td>
+                                    <span class="badge bg-danger">
+                                        <i class="fas fa-arrow-down"></i> Por debajo del mínimo
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i> No hay alertas de stock bajo.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Gráficos adicionales -->
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-chart-bar"></i> Producción por Planta (Mes Actual)
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="produccionPlantaChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-chart-pie"></i> Top 5 Distribuidores por Compras
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="topDistribuidoresChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12 mb-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-chart-line"></i> Rotación de Inventario
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="rotacionInventarioChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Renderizar gráfico de Plotly
+    var graphData = {{ graph_json|safe }};
+    Plotly.newPlot('grafico-productos', graphData.data, graphData.layout);
+</script>
+
+<!-- Script de gráficos adicionales -->
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+
+<style>
+    .stat-card {
+        transition: transform 0.3s, box-shadow 0.3s;
+        border-radius: 15px;
+        border: none;
+    }
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    }
+    .stat-card i {
+        opacity: 0.3;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}Crear Distribuidor - Cervecería Pil Andina{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+        <i class="fas fa-plus"></i> Crear Distribuidor
+    </h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{{ url_for('listar_distribuidores') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="card-title mb-0">Datos del Distribuidor</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="nit" class="form-label">NIT *</label>
+                            <input type="text" class="form-control" id="nit" name="nit" required 
+                                   placeholder="Ej: 1001001">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="razon_social" class="form-label">Razón Social *</label>
+                            <input type="text" class="form-control" id="razon_social" name="razon_social" required 
+                                   placeholder="Ej: Distribuciones Norte SRL">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="direccion" class="form-label">Dirección</label>
+                        <input type="text" class="form-control" id="direccion" name="direccion" 
+                               placeholder="Ej: Av. Montes 1234">
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="ciudad" class="form-label">Ciudad *</label>
+                            <select class="form-select" id="ciudad" name="ciudad" required>
+                                <option value="">Seleccione...</option>
+                                <option value="La Paz">La Paz</option>
+                                <option value="Cochabamba">Cochabamba</option>
+                                <option value="Santa Cruz">Santa Cruz</option>
+                                <option value="Oruro">Oruro</option>
+                                <option value="Potosí">Potosí</option>
+                                <option value="Sucre">Sucre</option>
+                                <option value="Tarija">Tarija</option>
+                                <option value="Trinidad">Trinidad</option>
+                                <option value="Cobija">Cobija</option>
+                                <option value="El Alto">El Alto</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="zona" class="form-label">Zona</label>
+                            <input type="text" class="form-control" id="zona" name="zona" 
+                                   placeholder="Ej: Norte, Sur, Centro">
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="contacto" class="form-label">Contacto</label>
+                            <input type="text" class="form-control" id="contacto" name="contacto" 
+                                   placeholder="Nombre del contacto">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="telefono" class="form-label">Teléfono</label>
+                            <input type="text" class="form-control" id="telefono" name="telefono" 
+                                   placeholder="Ej: 71112233">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="correo" class="form-label">Correo Electrónico</label>
+                        <input type="email" class="form-control" id="correo" name="correo" 
+                               placeholder="ejemplo@mail.com">
+                    </div>
+
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> Los campos marcados con * son obligatorios.
+                    </div>
+
+                    <div class="text-end">
+                        <a href="{{ url_for('listar_distribuidores') }}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Guardar Distribuidor
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="card-title mb-0">Ayuda</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>NIT:</strong> Número de Identificación Tributaria (único por distribuidor).</p>
+                <p><strong>Razón Social:</strong> Nombre legal de la empresa distribuidora.</p>
+                <p><strong>Ciudad:</strong> Ciudad donde opera el distribuidor.</p>
+                <p><strong>Zona:</strong> Zona específica dentro de la ciudad.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

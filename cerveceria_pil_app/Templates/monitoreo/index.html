@@ -1,0 +1,255 @@
+{% extends "base.html" %}
+
+{% block title %}Monitoreo del Sistema - Cervecería Pil Andina{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+        <i class="fas fa-chart-line"></i> Monitoreo del Sistema
+    </h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <button type="button" class="btn btn-success" onclick="window.location.reload()">
+            <i class="fas fa-sync-alt"></i> Actualizar
+        </button>
+    </div>
+</div>
+
+<!-- Tarjetas de Estadísticas -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title">Usuarios Activos</h6>
+                        <h2 class="mb-0">{{ stats.total_usuarios }}</h2>
+                    </div>
+                    <i class="fas fa-users fa-3x opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title">Conexiones Activas</h6>
+                        <h2 class="mb-0">{{ stats.conexiones_actuales }}</h2>
+                    </div>
+                    <i class="fas fa-plug fa-3x opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-white bg-info">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title">Uptime</h6>
+                        <h5 class="mb-0">{{ stats.uptime }}</h5>
+                    </div>
+                    <i class="fas fa-clock fa-3x opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-white bg-warning">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title">Uso Memoria</h6>
+                        <h2 class="mb-0">{{ stats.memoria_uso }}</h2>
+                    </div>
+                    <i class="fas fa-memory fa-3x opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Conexiones Activas -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-plug"></i> Conexiones Activas a la Base de Datos
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr class="table-info">
+                                <th>ID</th>
+                                <th>Usuario</th>
+                                <th>Host</th>
+                                <th>Estado</th>
+                                <th>Tiempo Conexión</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for conn in conexiones_activas %}
+                            <tr>
+                                <td>{{ conn.id }}</td>
+                                <td>
+                                    <i class="fas fa-user-circle"></i> {{ conn.usuario }}
+                                </td>
+                                <td>{{ conn.host }}</td>
+                                <td>
+                                    {% if conn.estado == 'Query' %}
+                                    <span class="badge bg-warning">
+                                        <i class="fas fa-database"></i> Ejecutando Query
+                                    </span>
+                                    {% elif conn.estado == 'Sleep' %}
+                                    <span class="badge bg-secondary">
+                                        <i class="fas fa-bed"></i> Inactivo
+                                    </span>
+                                    {% else %}
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-check"></i> {{ conn.estado }}
+                                    </span>
+                                    {% endif %}
+                                </td>
+                                <td>00:05:32</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Logs de Auditoría -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-dark text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-history"></i> Logs de Auditoría
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover datatable">
+                        <thead>
+                            <tr class="table-dark">
+                                <th>ID</th>
+                                <th>Fecha</th>
+                                <th>Tabla</th>
+                                <th>Acción</th>
+                                <th>Registro ID</th>
+                                <th>Usuario</th>
+                                <th>Datos</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for log in logs %}
+                            <tr>
+                                <td>{{ log.id }}</td>
+                                <td>{{ log.fecha.strftime('%Y-%m-%d %H:%M:%S') if log.fecha else '' }}</td>
+                                <td>
+                                    <span class="badge bg-secondary">{{ log.tabla_afectada }}</span>
+                                </td>
+                                <td>
+                                    {% if log.accion == 'INSERT' %}
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-plus"></i> INSERT
+                                    </span>
+                                    {% elif log.accion == 'UPDATE' %}
+                                    <span class="badge bg-warning">
+                                        <i class="fas fa-edit"></i> UPDATE
+                                    </span>
+                                    {% elif log.accion == 'DELETE' %}
+                                    <span class="badge bg-danger">
+                                        <i class="fas fa-trash"></i> DELETE
+                                    </span>
+                                    {% elif log.accion == 'LOGIN' %}
+                                    <span class="badge bg-info">
+                                        <i class="fas fa-sign-in-alt"></i> LOGIN
+                                    </span>
+                                    {% elif log.accion == 'LOGOUT' %}
+                                    <span class="badge bg-secondary">
+                                        <i class="fas fa-sign-out-alt"></i> LOGOUT
+                                    </span>
+                                    {% else %}
+                                    <span class="badge bg-dark">{{ log.accion }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ log.registro_id or '-' }}</td>
+                                <td>
+                                    <i class="fas fa-user"></i> {{ log.usuario or 'SYSTEM' }}
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-outline-info" 
+                                            onclick="verDetalleLog('{{ log.datos_nuevos|replace("'", "\\'") }}', '{{ log.datos_previos|replace("'", "\\'") if log.datos_previos else '' }}')">
+                                        <i class="fas fa-eye"></i> Ver
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para ver detalles del log -->
+<div class="modal fade" id="modalLog" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-info-circle"></i> Detalle del Log
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <h6>Datos Nuevos:</h6>
+                <pre id="datosNuevos" class="bg-light p-2 rounded" style="max-height: 200px; overflow: auto;"></pre>
+                <h6>Datos Anteriores:</h6>
+                <pre id="datosPrevios" class="bg-light p-2 rounded" style="max-height: 200px; overflow: auto;"></pre>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function verDetalleLog(datosNuevos, datosPrevios) {
+    document.getElementById('datosNuevos').textContent = datosNuevos || 'No hay datos';
+    document.getElementById('datosPrevios').textContent = datosPrevios || 'No hay datos anteriores';
+    
+    var modal = new bootstrap.Modal(document.getElementById('modalLog'));
+    modal.show();
+}
+
+// Actualizar cada 30 segundos
+setInterval(function() {
+    location.reload();
+}, 30000);
+</script>
+
+<style>
+    .card {
+        transition: transform 0.2s;
+    }
+    .card:hover {
+        transform: translateY(-3px);
+    }
+    pre {
+        font-size: 12px;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+    }
+</style>
+{% endblock %}

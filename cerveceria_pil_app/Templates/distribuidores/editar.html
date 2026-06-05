@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Distribuidor - Cervecería Pil Andina{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+        <i class="fas fa-edit"></i> Editar Distribuidor
+    </h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{{ url_for('listar_distribuidores') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-warning">
+                <h5 class="card-title mb-0">Editar Datos del Distribuidor</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="nit" class="form-label">NIT *</label>
+                            <input type="text" class="form-control" id="nit" name="nit" 
+                                   value="{{ distribuidor.nit }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="razon_social" class="form-label">Razón Social *</label>
+                            <input type="text" class="form-control" id="razon_social" name="razon_social" 
+                                   value="{{ distribuidor.razon_social }}" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="direccion" class="form-label">Dirección</label>
+                        <input type="text" class="form-control" id="direccion" name="direccion" 
+                               value="{{ distribuidor.direccion or '' }}">
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="ciudad" class="form-label">Ciudad *</label>
+                            <select class="form-select" id="ciudad" name="ciudad" required>
+                                <option value="">Seleccione...</option>
+                                <option value="La Paz" {% if distribuidor.ciudad == 'La Paz' %}selected{% endif %}>La Paz</option>
+                                <option value="Cochabamba" {% if distribuidor.ciudad == 'Cochabamba' %}selected{% endif %}>Cochabamba</option>
+                                <option value="Santa Cruz" {% if distribuidor.ciudad == 'Santa Cruz' %}selected{% endif %}>Santa Cruz</option>
+                                <option value="Oruro" {% if distribuidor.ciudad == 'Oruro' %}selected{% endif %}>Oruro</option>
+                                <option value="Potosí" {% if distribuidor.ciudad == 'Potosí' %}selected{% endif %}>Potosí</option>
+                                <option value="Sucre" {% if distribuidor.ciudad == 'Sucre' %}selected{% endif %}>Sucre</option>
+                                <option value="Tarija" {% if distribuidor.ciudad == 'Tarija' %}selected{% endif %}>Tarija</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="zona" class="form-label">Zona</label>
+                            <input type="text" class="form-control" id="zona" name="zona" 
+                                   value="{{ distribuidor.zona or '' }}">
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="contacto" class="form-label">Contacto</label>
+                            <input type="text" class="form-control" id="contacto" name="contacto" 
+                                   value="{{ distribuidor.contacto or '' }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="telefono" class="form-label">Teléfono</label>
+                            <input type="text" class="form-control" id="telefono" name="telefono" 
+                                   value="{{ distribuidor.telefono or '' }}">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="correo" class="form-label">Correo Electrónico</label>
+                        <input type="email" class="form-control" id="correo" name="correo" 
+                               value="{{ distribuidor.correo or '' }}">
+                    </div>
+
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="activo" name="activo" 
+                               {% if distribuidor.activo %}checked{% endif %}>
+                        <label class="form-check-label" for="activo">
+                            Distribuidor Activo
+                        </label>
+                    </div>
+
+                    <div class="text-end">
+                        <a href="{{ url_for('listar_distribuidores') }}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Actualizar Distribuidor
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

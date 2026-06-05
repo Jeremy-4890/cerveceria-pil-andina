@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% block title %}Crear Pedido - Cervecería Pil Andina{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+        <i class="fas fa-plus"></i> Crear Nuevo Pedido
+    </h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{{ url_for('listar_pedidos') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <form method="POST" id="formPedido">
+                    <div class="mb-3">
+                        <label for="distribuidor_id" class="form-label">Distribuidor *</label>
+                        <select class="form-select" id="distribuidor_id" name="distribuidor_id" required>
+                            <option value="">Seleccione un distribuidor...</option>
+                            {% for distribuidor in distribuidores %}
+                            <option value="{{ distribuidor.id }}">{{ distribuidor.razon_social }} - {{ distribuidor.ciudad }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="fecha_entrega_requerida" class="form-label">Fecha Entrega Requerida *</label>
+                        <input type="date" class="form-control" id="fecha_entrega_requerida" 
+                               name="fecha_entrega_requerida" required>
+                    </div>
+
+                    <hr>
+
+                    <h5 class="mb-3">Productos del Pedido</h5>
+                    <div id="productos-container">
+                        <div class="producto-item row mb-3">
+                            <div class="col-md-5">
+                                <select class="form-select producto-select" name="producto_id[]" required>
+                                    <option value="">Seleccione producto...</option>
+                                    {% for producto in productos %}
+                                    <option value="{{ producto.id }}" data-precio="{{ producto.precio_actual }}">
+                                        {{ producto.nombre_comercial }} ({{ producto.presentacion }}) - Bs {{ producto.precio_actual }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="number" class="form-control cantidad-input" name="cantidad[]" 
+                                       placeholder="Cantidad" min="1" required>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="text" class="form-control precio-input" name="precio_unitario[]" 
+                                       placeholder="Precio" readonly>
+                            </div>
+                            <div class="col-md-1">
+                                <button type="button" class="btn btn-danger btn-eliminar-producto">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="button" id="agregar-producto" class="btn btn-success mb-3">
+                        <i class="fas fa-plus"></i> Agregar Producto
+                    </button>
+
+                    <hr>
+
+                    <div class="text-end">
+                        <a href="{{ url_for('listar_pedidos') }}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Guardar Pedido
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Resumen del Pedido</h5>
+            </div>
+            <div class="card-body">
+                <h4>Total: <span id="total-pedido">Bs 0.00</span></h4>
+                <hr>
+                <div id="resumen-productos">
+                    <p class="text-muted">Agregue productos para ver el resumen</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Agregar producto
+    document.getElementById('agregar-producto').addEventListener('click', function() {
+        const container = document.getElementById('productos-container');
+        const template = container.children[0].cloneNode(true);
+        
+        // Limpiar valores
+        template.querySelector('.producto-select').value = '';
+        template.querySelector('.cantidad-input').value = '';
+        template.querySelector('.precio-input').value = '';
+        
+        container.appendChild(template);
+        actualizarResumen();
+    });
+
+    // Eliminar producto
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('btn-eliminar-producto') || 
+            e.target.parentElement.classList.contains('btn-eliminar-producto')) {
+            const item = e.target.closest('.producto-item');
+            if (document.querySelectorAll('.producto-item').length > 1) {
+                item.remove();
+                actualizarResumen();
+            } else {
+                alert('Debe haber al menos un producto');
+            }
+        }
+    });
+
+    // Actualizar precio al seleccionar producto
+    document.addEventListener('change', function(e) {
+        if (e.target.classList.contains('producto-select')) {
+            const select = e.target;
+            const precio = select.options[select.selectedIndex].getAttribute('data-precio');
+            const item = select.closest('.producto-item');
+            item.querySelector('.precio-input').value = precio;
+            actualizarResumen();
+        }
+    });
+
+    // Actualizar cantidad
+    document.addEventListener('input', function(e) {
+        if (e.target.classList.contains('cantidad-input')) {
+            actualizarResumen();
+        }
+    });
+
+    // Calcular total
+    function actualizarResumen() {
+        let total = 0;
+        const resumenDiv = document.getElementById('resumen-productos');
+        let html = '<h6>Productos:</h6><ul class="list-unstyled">';
+        
+        document.querySelectorAll('.producto-item').forEach(item => {
+            const select = item.querySelector('.producto-select');
+            const cantidad = item.querySelector('.cantidad-input').value;
+            const precio = item.querySelector('.precio-input').value;
+            
+            if (select.value && cantidad && precio) {
+                const nombre = select.options[select.selectedIndex].text.split(' - ')[0];
+                const subtotal = cantidad * precio;
+                total += subtotal;
+                html += `<li><small>${nombre} x ${cantidad} = Bs ${subtotal.toFixed(2)}</small></li>`;
+            }
+        });
+        
+        html += '</ul>';
+        resumenDiv.innerHTML = html;
+        document.getElementById('total-pedido').innerHTML = `Bs ${total.toFixed(2)}`;
+    }
+</script>
+{% endblock %}

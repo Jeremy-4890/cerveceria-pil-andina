@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block title %}Reportes - Cervecería Pil Andina{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+        <i class="fas fa-chart-bar"></i> Reportes Gerenciales
+    </h1>
+</div>
+
+<div class="row">
+    <!-- Reporte de Productos -->
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-box"></i> Productos
+                </h5>
+            </div>
+            <div class="card-body">
+                <p>Exportar lista completa de productos activos con todos sus datos.</p>
+                <p class="text-muted small">
+                    <i class="fas fa-info-circle"></i> Incluye: código, nombre, tipo, presentación, graduación, precio, stock mínimo/máximo
+                </p>
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('exportar_reporte', tipo='productos') }}" class="btn btn-primary w-100">
+                    <i class="fas fa-file-excel"></i> Exportar Productos
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reporte de Distribuidores -->
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-success text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-truck"></i> Distribuidores
+                </h5>
+            </div>
+            <div class="card-body">
+                <p>Exportar lista completa de distribuidores activos.</p>
+                <p class="text-muted small">
+                    <i class="fas fa-info-circle"></i> Incluye: NIT, razón social, dirección, ciudad, zona, contacto, teléfono, correo
+                </p>
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('exportar_reporte', tipo='distribuidores') }}" class="btn btn-success w-100">
+                    <i class="fas fa-file-excel"></i> Exportar Distribuidores
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reporte de Stock -->
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-info text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-warehouse"></i> Stock Actual
+                </h5>
+            </div>
+            <div class="card-body">
+                <p>Exportar stock actual por producto y planta.</p>
+                <p class="text-muted small">
+                    <i class="fas fa-info-circle"></i> Incluye: producto, presentación, planta, ciudad, bodega, stock total
+                </p>
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('exportar_reporte', tipo='stock') }}" class="btn btn-info w-100 text-white">
+                    <i class="fas fa-file-excel"></i> Exportar Stock
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reporte de Pedidos -->
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-shopping-cart"></i> Pedidos
+                </h5>
+            </div>
+            <div class="card-body">
+                <p>Exportar historial de pedidos realizados.</p>
+                <p class="text-muted small">
+                    <i class="fas fa-info-circle"></i> Incluye: ID pedido, distribuidor, fecha, estado, monto total
+                </p>
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('exportar_reporte', tipo='pedidos') }}" class="btn btn-warning w-100">
+                    <i class="fas fa-file-excel"></i> Exportar Pedidos
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reporte de Facturación -->
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-danger text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-file-invoice-dollar"></i> Facturación
+                </h5>
+            </div>
+            <div class="card-body">
+                <p>Exportar resumen de facturación por distribuidor.</p>
+                <p class="text-muted small">
+                    <i class="fas fa-info-circle"></i> Incluye: distribuidor, ciudad, total facturas, monto total, pendiente, vencido
+                </p>
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('exportar_reporte', tipo='facturacion') }}" class="btn btn-danger w-100">
+                    <i class="fas fa-file-excel"></i> Exportar Facturación
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Exportar Todo -->
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 bg-dark text-white">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-download"></i> Exportar Todo
+                </h5>
+            </div>
+            <div class="card-body">
+                <p>Exportar todos los reportes en un solo archivo ZIP.</p>
+                <p class="text-muted small">
+                    <i class="fas fa-info-circle"></i> Incluye: productos, distribuidores, stock, pedidos, facturación
+                </p>
+            </div>
+            <div class="card-footer">
+                <button onclick="exportarTodo()" class="btn btn-secondary w-100">
+                    <i class="fas fa-file-archive"></i> Exportar Todo
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Script para exportar múltiples reportes -->
+<script>
+function exportarTodo() {
+    const reportes = ['productos', 'distribuidores', 'stock', 'pedidos', 'facturacion'];
+    
+    reportes.forEach(reporte => {
+        // Abrir cada reporte en una nueva pestaña
+        window.open("{{ url_for('exportar_reporte', tipo='') }}" + reporte, '_blank');
+    });
+    
+    setTimeout(() => {
+        alert('Se han abierto las pestañas de descarga para todos los reportes.');
+    }, 1000);
+}
+</script>
+
+<style>
+    .card {
+        transition: transform 0.3s, box-shadow 0.3s;
+        border-radius: 15px;
+        overflow: hidden;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    }
+    .card-header {
+        font-weight: bold;
+    }
+    .btn {
+        border-radius: 10px;
+        font-weight: 500;
+    }
+</style>
+{% endblock %}

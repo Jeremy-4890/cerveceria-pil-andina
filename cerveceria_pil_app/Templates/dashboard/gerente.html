@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard Gerente - Cervecería Pil Andina{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+        <i class="fas fa-chart-line"></i> Dashboard Gerente
+    </h1>
+</div>
+
+<!-- Pedidos Pendientes por Distribuidor -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-clock"></i> Pedidos Pendientes por Distribuidor
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if pedidos_pendientes %}
+                <div class="table-responsive">
+                    <table class="table table-hover datatable">
+                        <thead>
+                            <tr>
+                                <th>Distribuidor</th>
+                                <th>Ciudad</th>
+                                <th>Zona</th>
+                                <th>Total Pedidos</th>
+                                <th>Monto Pendiente</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pedido in pedidos_pendientes %}
+                            <tr>
+                                <td>{{ pedido.razon_social }}</td>
+                                <td>{{ pedido.ciudad }}</td>
+                                <td>{{ pedido.zona }}</td>
+                                <td>{{ pedido.total_pendientes }}</td>
+                                <td>Bs {{ "{:,.2f}".format(pedido.monto_pendiente|float) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info">No hay pedidos pendientes</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Productos Próximos a Vencer -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-warning">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-hourglass-half"></i> Productos Próximos a Vencer (30 días)
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if proximos_vencer %}
+                <div class="table-responsive">
+                    <table class="table table-hover datatable">
+                        <thead>
+                            <tr>
+                                <th>Lote</th>
+                                <th>Producto</th>
+                                <th>Presentación</th>
+                                <th>Fecha Vencimiento</th>
+                                <th>Días Restantes</th>
+                                <th>Stock Actual</th>
+                                <th>Bodega</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for producto in proximos_vencer %}
+                            <tr class="{% if producto.dias_restantes <= 7 %}table-danger{% elif producto.dias_restantes <= 15 %}table-warning{% endif %}">
+                                <td>{{ producto.numero_lote }}</td>
+                                <td>{{ producto.nombre_comercial }}</td>
+                                <td>{{ producto.presentacion }}</td>
+                                <td>{{ producto.fecha_vencimiento }}</td>
+                                <td>
+                                    <span class="badge {% if producto.dias_restantes <= 7 %}bg-danger{% elif producto.dias_restantes <= 15 %}bg-warning{% else %}bg-info{% endif %}">
+                                        {{ producto.dias_restantes }} días
+                                    </span>
+                                </td>
+                                <td>{{ producto.cantidad_actual }}</td>
+                                <td>{{ producto.nombre_bodega }} ({{ producto.planta }})</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i> No hay productos próximos a vencer
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Rotación Mensual -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-chart-line"></i> Rotación de Inventario
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if rotacion %}
+                <div class="table-responsive">
+                    <table class="table table-hover datatable">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Presentación</th>
+                                <th>Tipo</th>
+                                <th>Salidas Mes Actual</th>
+                                <th>Salidas Mes Anterior</th>
+                                <th>Entradas Total</th>
+                                <th>Tendencia</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in rotacion %}
+                            <tr>
+                                <td>{{ item.nombre_comercial }}</td>
+                                <td>{{ item.presentacion }}</td>
+                                <td>{{ item.tipo }}</td>
+                                <td>{{ item.salidas_mes_actual }}</td>
+                                <td>{{ item.salidas_mes_anterior }}</td>
+                                <td>{{ item.entradas_total }}</td>
+                                <td>
+                                    {% if item.salidas_mes_actual > item.salidas_mes_anterior %}
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-arrow-up"></i> +{{ ((item.salidas_mes_actual - item.salidas_mes_anterior) / item.salidas_mes_anterior * 100)|round(1) }}%
+                                    </span>
+                                    {% elif item.salidas_mes_actual < item.salidas_mes_anterior %}
+                                    <span class="badge bg-danger">
+                                        <i class="fas fa-arrow-down"></i> -{{ ((item.salidas_mes_anterior - item.salidas_mes_actual) / item.salidas_mes_anterior * 100)|round(1) }}%
+                                    </span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">Sin cambio</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info">No hay datos de rotación disponibles</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
