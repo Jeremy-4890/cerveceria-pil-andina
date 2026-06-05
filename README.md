@@ -12,20 +12,22 @@ El sistema soluciona los siguientes problemas:
 - ❌ No hay cálculo de rotación de inventario
 - ❌ No existen alertas de productos próximos a vencer
 
-credenciales de acceso
+##  Integrantes del Grupo
 
-Rol	Usuario	Contraseña
-Administrador	admin_pil	Admin123!
-Gerente	gerente_pil	Gerente123!
-Distribuidor	distribuidor_pil	Dist123!
+| Rol	          |Usuario	        |Contraseña
+|---------------|-----------------|-----|
+| Administrador |	admin_pil	      |Admin123!|
+| Gerente	      |gerente_pil      | Gerente123!|
+| Distribuidor	|distribuidor_pil	|Dist123!|
+
 
 ##  Integrantes del Grupo
 
 | Nombre | Rol | CI |
 |--------|-----|-----|
-| Jeremy José Ibañez Quisbert | DBA + Backend | [TU CI] |
-| [Nombre Integrante 2] | Frontend | [CI] |
-| [Nombre Integrante 3] | Backend | [CI] |
+| Jeremy José Ibañez Quisbert | Backend+Frontend | [TU CI] |
+| [Nombre Integrante 2] | Frontend+BDA | [CI] |
+
 
 ##  Tecnologías Utilizadas
 
