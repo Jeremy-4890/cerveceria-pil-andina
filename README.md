@@ -12,6 +12,13 @@ El sistema soluciona los siguientes problemas:
 - ❌ No hay cálculo de rotación de inventario
 - ❌ No existen alertas de productos próximos a vencer
 
+credenciales de acceso
+
+Rol	Usuario	Contraseña
+Administrador	admin_pil	Admin123!
+Gerente	gerente_pil	Gerente123!
+Distribuidor	distribuidor_pil	Dist123!
+
 ##  Integrantes del Grupo
 
 | Nombre | Rol | CI |
@@ -40,3 +47,6 @@ El sistema soluciona los siguientes problemas:
 ```bash
 git clone https://github.com/[TU_USUARIO]/cerveceria-pil-andina.git
 cd cerveceria-pil-andina
+
+
+
