@@ -25,8 +25,8 @@ El sistema soluciona los siguientes problemas:
 
 | Nombre | Rol | CI |
 |--------|-----|-----|
-| Jeremy José Ibañez Quisbert | Backend+Frontend | [TU CI] |
-| [Nombre Integrante 2] | Frontend+BDA | [CI] |
+| Jeremy José Ibañez Quisbert | Backend+Frontend | 13692634 |
+| Ian Andres Yujra Condori | Frontend+BDA | 14416815 |
 
 
 ##  Tecnologías Utilizadas
